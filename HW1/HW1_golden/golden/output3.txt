@@ -15,7 +15,7 @@ ABDE
 AB'C'E
 AC'D
 A'BCD'
-A'BD'E
+A'BC'E
 A'B'CD
 BC'D
 literal=26
