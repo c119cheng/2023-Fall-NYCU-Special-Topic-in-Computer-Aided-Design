@@ -8,6 +8,7 @@
 #include <map>
 #include <algorithm>
 #include <climits>
+#include <chrono>
 using namespace std;
 
 
@@ -16,18 +17,21 @@ struct implicant{
     string s; // expression
     int num; // num of one in s
     bool simplified;
+    int NumOfLiteral;
 };
 
 class QMC{
     private:
         int input_variable;
         unordered_set<int> on_set, dc_set, covered;
-        vector<implicant> I;
-        vector<implicant> PI;
-        vector<implicant> MC;
-
+        vector<implicant*> I;
+        vector<implicant*> PI;
+        vector<implicant*> MC;
+        vector<int> tmp;
+        int tmp_ptr;
+        int remain_size;
         int min_literal;
-        vector<implicant> best_MC;
+        vector<implicant*> best_MC;
     public:
         QMC();
         ~QMC();
@@ -41,5 +45,5 @@ class QMC{
         void getPI();
         void getMC();
 
-        void BF(int, unordered_set<int>, vector<implicant>&, int, vector<implicant>&);
+        void BF(int, unordered_set<int>, vector<implicant*>&, int, vector<implicant*>&, vector<bool>&);
 };

@@ -59,7 +59,7 @@ string getString(int n, int size){
     return out;
 }
 
-int getNumOfLiteral(string s){
+int getNumOfLiteral(string& s){
     int count = 0;
     for(int i=0;i<s.length();i++)
         if(s[i] != '-')
@@ -70,21 +70,21 @@ int getNumOfLiteral(string s){
 void QMC::getImplicant(){
     // on_set
     for(const auto& n : on_set){
-        implicant tmp;
-        tmp.cover.insert(n);
-        tmp.s = getString(n, input_variable);
-        tmp.num = getNumOfOne(n);
-        tmp.simplified = false;
+        implicant* tmp = new implicant;
+        tmp->cover.insert(n);
+        tmp->s = getString(n, input_variable);
+        tmp->num = getNumOfOne(n);
+        tmp->simplified = false;
         I.push_back(tmp);
     }
 
     // dc_set
     for(const auto& n : dc_set){
-        implicant tmp;
-        tmp.cover.insert(n);
-        tmp.s = getString(n, input_variable);
-        tmp.num = getNumOfOne(n);
-        tmp.simplified = false;
+        implicant* tmp = new implicant;
+        tmp->cover.insert(n);
+        tmp->s = getString(n, input_variable);
+        tmp->num = getNumOfOne(n);
+        tmp->simplified = false;
         I.push_back(tmp);
     }
 }
@@ -105,37 +105,37 @@ int QMC::diffIdx(const string& a, const string& b){
 
 void QMC::getPI(){
     // divide implicants by number of 1
-    map<int, vector<implicant>> m;
+    map<int, vector<implicant*>> m;
     for(auto const& i : I){
-        m[i.num].push_back(i);
+        m[i->num].push_back(i);
     }
 
     // get prime implicant
     unordered_set<string> existed;
     while(!m.empty()){
-        map<int, vector<implicant>> tmp;
+        map<int, vector<implicant*>> tmp;
         for(int i=0;i<=input_variable;i++){
             for(auto& IA : m[i]){
                 for(auto& IB : m[i+1]){
-                    int idx = diffIdx(IA.s, IB.s);
+                    int idx = diffIdx(IA->s, IB->s);
                     if(idx != -1){ // can be simplify
-                        implicant a;
-                        a.cover.insert(IA.cover.begin(), IA.cover.end());
-                        a.cover.insert(IB.cover.begin(), IB.cover.end());
+                        implicant* a = new implicant;
+                        a->cover.insert(IA->cover.begin(), IA->cover.end());
+                        a->cover.insert(IB->cover.begin(), IB->cover.end());
 
-                        a.s = IA.s;
-                        a.s[idx] = '-';
-                        a.num = min(IA.num, IB.num);
+                        a->s = IA->s;
+                        a->s[idx] = '-';
+                        a->num = min(IA->num, IB->num);
 
-                        a.simplified = false;
-                        if(!existed.count(a.s))
-                            tmp[a.num].push_back(a);
-                        existed.insert(a.s);
-                        IA.simplified = true;
-                        IB.simplified = true;
+                        a->simplified = false;
+                        if(!existed.count(a->s))
+                            tmp[a->num].push_back(a);
+                        existed.insert(a->s);
+                        IA->simplified = true;
+                        IB->simplified = true;
                     }
                 }
-                if(!IA.simplified)
+                if(!IA->simplified)
                     PI.push_back(IA);
             }
         }
@@ -160,11 +160,11 @@ void QMC::output(char *file_name){
     PI = I;
     vector<string> pi_s(PI.size()); // prime implicant string
     for(int i=0;i<PI.size();i++)
-        pi_s[i] = PI[i].s;
+        pi_s[i] = PI[i]->s;
 
     vector<string> mc_s(MC.size()); // minimum covering string
     for(int i=0;i<MC.size();i++)
-        mc_s[i] = MC[i].s;
+        mc_s[i] = MC[i]->s;
 
     // sort in alphabetic order
     sort(pi_s.begin(), pi_s.end(), greater<string>());
@@ -192,7 +192,7 @@ void QMC::getMC(){
     // find the term only cover by one prime implicant
     map<int, int> cover_size;
     for(const auto& tmp : PI){
-        for(const auto& c : tmp.cover)
+        for(const auto& c : tmp->cover)
             if(on_set.count(c))
                 cover_size[c]++;
     }
@@ -207,9 +207,9 @@ void QMC::getMC(){
             if(cs.second == 1){
                 // find the prime implicant that cover this term
                 for(int i=0;i<PI.size();i++){
-                    if(PI[i].cover.count(cs.first)){
+                    if(PI[i]->cover.count(cs.first)){
                         MC.push_back(PI[i]);
-                        for(const auto& n : PI[i].cover)
+                        for(const auto& n : PI[i]->cover)
                             cover_size.erase(n);
                         PI.erase(PI.begin()+i);
                         break;
@@ -224,18 +224,18 @@ void QMC::getMC(){
     for(const auto& n : cover_size)
         uncovered.insert(n.first);
 
-    vector<implicant> remain_implicant;
+    vector<implicant*> remain_implicant;
     for(auto& pi : PI){
         unordered_set<int> new_cover;
         bool insert = false;
         for(const auto& n : uncovered)
-            if(pi.cover.count(n)){
+            if(pi->cover.count(n)){
                 new_cover.insert(n);
                 insert = true;
             }
         if(insert){
-            pi.cover.clear();
-            pi.cover.insert(new_cover.begin(), new_cover.end());
+            pi->cover.clear();
+            pi->cover.insert(new_cover.begin(), new_cover.end());
             remain_implicant.push_back(pi);
         }
     }
@@ -248,33 +248,74 @@ void QMC::getMC(){
     // recursive find min literal solution
     min_literal = INT_MAX;
 
-    vector<implicant> tmp;
-    BF(0, covered, tmp, 0, remain_implicant);
-
+    vector<implicant*> tmp;
+    tmp.reserve(remain_implicant.size() + 5);
+    this->tmp = vector<int>(remain_implicant.size());
+    tmp_ptr = 0;
+    vector<bool> remain_cover(remain_implicant.size(), true);
+    remain_size = remain_implicant.size();
+    for(auto& ptr : remain_implicant)
+        ptr->NumOfLiteral = getNumOfLiteral(ptr->s);
+    auto start = chrono::high_resolution_clock::now();
+    
+    BF(0, covered, tmp, 0, remain_implicant, remain_cover);
+    auto end = chrono::high_resolution_clock::now();
+    auto du = chrono::duration_cast<chrono::milliseconds>(end - start);
+    cout << "BF runtime : " << du.count() << " ms" << endl;
     // organize all mc
     for(const auto& i : MC)
-        min_literal += getNumOfLiteral(i.s);
+        min_literal += getNumOfLiteral(i->s);
     for(const auto& i : best_MC)
         MC.push_back(i);
 }
 
-void QMC::BF(int cur_literal, unordered_set<int> cur_covered, vector<implicant>& cur_implicant,
-    int idx, vector<implicant>& remain){
-        if(cur_literal < min_literal && cur_covered.size() == on_set.size()){
+void QMC::BF(int cur_literal, unordered_set<int> cur_covered, vector<implicant*>& cur_implicant,
+    int idx, vector<implicant*>& remain, vector<bool>& remain_cover){
+        if(cur_covered.size() == on_set.size() && cur_literal < min_literal){
             min_literal = cur_literal;
             best_MC = cur_implicant;
             return ;
         }
-        if(cur_literal > min_literal || idx == remain.size())
+        while(idx < remain_size && remain_cover[idx] == false)
+            idx++;
+        if(cur_literal > min_literal || idx == remain_size)
             return ;
 
+        int old_literal = cur_literal;
+        unordered_set<int> old_covered = cur_covered;
         // not select idx implicant
-        BF(cur_literal, cur_covered, cur_implicant, idx+1, remain);
-
+        BF(old_literal, old_covered, cur_implicant, idx+1, remain, remain_cover);
         // select idx implicant
         cur_implicant.push_back(remain[idx]);
-        cur_covered.insert(remain[idx].cover.begin(), remain[idx].cover.end());
-        cur_literal += getNumOfLiteral(remain[idx].s);
-        BF(cur_literal, cur_covered, cur_implicant, idx+1, remain);
+        for(auto& i : remain[idx]->cover)
+            if(cur_covered.find(i) == cur_covered.end())
+                cur_covered.insert(i);
+        // cur_covered.insert(remain[idx]->cover.begin(), remain[idx]->cover.end());
+        cur_literal += remain[idx]->NumOfLiteral;
+        // remove overlap cover
+        int tmp_idx = tmp_ptr;
+        for(int i=idx+1;i<remain_size;i++){
+            if(remain_cover[i] == false)
+                continue;
+            bool remove = true;
+            for(auto& c : remain[i]->cover){
+                if(cur_covered.find(c) == cur_covered.end()){
+                    remove = false;
+                    break;
+                }
+            }
+            if(remove){
+                tmp[tmp_ptr++] = i;
+                remain_cover[i] = false;
+            }
+        }
+
+        BF(cur_literal, cur_covered, cur_implicant, idx+1, remain, remain_cover);
         cur_implicant.pop_back();
+        for(int i=tmp_idx;i<tmp_ptr;i++)
+            remain_cover[tmp[i]] = true;
+        tmp_ptr = tmp_idx;
+        // for(int i=idx+1;i<remain_size;i++)
+        //     remain_cover[i] = true;
+
     }
