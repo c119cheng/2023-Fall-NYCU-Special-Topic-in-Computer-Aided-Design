@@ -256,12 +256,12 @@ void QMC::getMC(){
     remain_size = remain_implicant.size();
     for(auto& ptr : remain_implicant)
         ptr->NumOfLiteral = getNumOfLiteral(ptr->s);
-    auto start = chrono::high_resolution_clock::now();
+   //  auto start = chrono::high_resolution_clock::now();
     
     BF(0, covered, tmp, 0, remain_implicant, remain_cover);
-    auto end = chrono::high_resolution_clock::now();
-    auto du = chrono::duration_cast<chrono::milliseconds>(end - start);
-    cout << "BF runtime : " << du.count() << " ms" << endl;
+    // auto end = chrono::high_resolution_clock::now();
+    // auto du = chrono::duration_cast<chrono::milliseconds>(end - start);
+    // cout << "BF runtime : " << du.count() << " ms" << endl;
     // organize all mc
     for(const auto& i : MC)
         min_literal += getNumOfLiteral(i->s);
