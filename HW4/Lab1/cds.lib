@@ -1,0 +1,3 @@
+SOFTINCLUDE /home/EDATOOLS/cadence/IC/IC_06.17.709/share/cdssetup/cds.lib
+#Removed by ddDeleteObj: DEFINE PLL /edahome/course/2023CAD/2023CAD010/HW/HW4/Lab1/PLL
+DEFINE PLL /edahome/course/2023CAD/2023CAD010/HW/HW4/Lab1/PLL

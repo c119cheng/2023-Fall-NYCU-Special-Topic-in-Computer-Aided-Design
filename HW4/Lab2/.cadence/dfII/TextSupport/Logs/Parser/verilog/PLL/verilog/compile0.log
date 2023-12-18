@@ -1,0 +1,20 @@
+ncvlog(64): 15.20-s039: (c) Copyright 1995-2017 Cadence Design Systems, Inc.
+TOOL:	ncvlog(64)	15.20-s039: Started on Dec 16, 2023 at 22:13:49 CST
+ncvlog
+    -use5x
+    -SPECIFICUNIT divider
+    -zparse /tmp/vamsZparab6156
+    -NOWARN DLNOHV
+    -work PLL
+    -view verilog
+    -nostdout
+    -logfile /edahome/course/2023CAD/2023CAD010/HW/HW4/Lab2/.cadence/dfII/TextSupport/Logs/Parser/verilog/PLL/verilog/compile0.log
+    -messages
+    -cdslib /edahome/course/2023CAD/2023CAD010/HW/HW4/Lab2/cds.lib
+    /edahome/course/2023CAD/2023CAD010/HW/HW4/Lab2/PLL/divider/verilog/verilog.v
+
+file: /edahome/course/2023CAD/2023CAD010/HW/HW4/Lab2/PLL/divider/verilog/verilog.v
+	module PLL.divider:verilog
+		errors: 0, warnings: 0
+	 writing out DPL output:
+TOOL:	ncvlog(64)	15.20-s039: Exiting on Dec 16, 2023 at 22:13:49 CST  (total: 00:00:00)

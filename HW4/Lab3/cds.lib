@@ -1,0 +1,2 @@
+SOFTINCLUDE /home/EDATOOLS/cadence/IC/IC_06.17.709/share/cdssetup/cds.lib
+DEFINE ADC /edahome/course/2023CAD/2023CAD010/HW/HW4/Lab3/ADC

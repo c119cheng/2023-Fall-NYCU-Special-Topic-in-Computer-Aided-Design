@@ -1,0 +1,21 @@
+ncvlog(64): 15.20-s039: (c) Copyright 1995-2017 Cadence Design Systems, Inc.
+TOOL:	ncvlog(64)	15.20-s039: Started on Dec 18, 2023 at 00:15:15 CST
+ncvlog
+    -use5x
+    -SPECIFICUNIT encoder
+    -zparse /tmp/vamsZparce0258
+    -NOWARN DLNOHV
+    -work ADC
+    -view verilogams
+    -nostdout
+    -logfile /edahome/course/2023CAD/2023CAD010/HW/HW4/Lab3/.cadence/dfII/TextSupport/Logs/Parser/verilogams/ADC/verilogams/compile0.log
+    -messages
+    -ams
+    -cdslib /edahome/course/2023CAD/2023CAD010/HW/HW4/Lab3/cds.lib
+    /edahome/course/2023CAD/2023CAD010/HW/HW4/Lab3/ADC/encoder/verilogams/verilog.vams
+
+file: /edahome/course/2023CAD/2023CAD010/HW/HW4/Lab3/ADC/encoder/verilogams/verilog.vams
+	module ADC.encoder:verilogams
+		errors: 0, warnings: 0
+	 writing out DPL output:
+TOOL:	ncvlog(64)	15.20-s039: Exiting on Dec 18, 2023 at 00:15:15 CST  (total: 00:00:00)

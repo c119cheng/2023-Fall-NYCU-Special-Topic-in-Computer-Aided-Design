@@ -1,0 +1,35 @@
+`include "constants.vams"
+`include "disciplines.vams"
+
+module encoder (
+  input I1, I2, I3, I4, I5, I6, I7, I8, I9, I10, I11, I12, I13, I14, I15, I16,
+  output reg B3, B2, B1, B0
+);
+  reg [3:0] out;
+  always @(*) begin
+    out = 0;
+
+    // Priority encoding logic
+    if (I16) out = 15;
+    else if (I15) out = 14;
+    else if (I14) out = 13;
+    else if (I13) out = 12;
+    else if (I12) out = 11;
+    else if (I11) out = 10;
+    else if (I10)  out = 9;
+    else if (I9)  out = 8;
+    else if (I8)  out = 7;
+    else if (I7)  out = 6;
+    else if (I6)  out = 5;
+    else if (I5)  out = 4;
+    else if (I4)  out = 3;
+    else if (I3)  out = 2;
+    else if (I2)  out = 1;
+  
+    B3 = out[3];
+    B2 = out[2];
+    B1 = out[1];
+    B0 = out[0];
+  end
+
+endmodule
